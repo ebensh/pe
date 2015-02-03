@@ -25,15 +25,19 @@ def main():
         break
       m = mutate(m)
 
+  # Does freezing the set make a performance difference?
+  low = frozenset(low)
+  high = frozenset(high)
+
   for x in xrange(567+1, kMax):
-    m = mutate(x)
+    m = x
     while True:
+      m = mutate(m)
       if m in low:
         break
       elif m in high:
         count += 1
         break
-      
 
   print count
 
