@@ -7,8 +7,8 @@ def mutate1(x):
 def mutate2(x):
   sum = 0
   while x >= 10:
-    sum += (x % 10) ** 2
-    x = int(x / 10)
+    x, d = divmod(x, 10)
+    sum += d ** 2
   sum += x ** 2
   return sum
 
