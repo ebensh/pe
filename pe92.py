@@ -10,7 +10,7 @@ def main():
   for x in xrange(2, kMax):
     xs = [x]
     while True:
-      if x == 1 or x in low:
+      if x in low:
         low.update(xs)
         break
       elif x in high:
