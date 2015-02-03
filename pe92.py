@@ -5,20 +5,37 @@ def mutate(x):
 
 def main():
   kMax = 10000000
+
   low = set([1])
   high = set([89])
-  for x in xrange(2, kMax):
-    xs = [x]
+
+  # The maximum number we would need in our set is mutate(9999999),
+  # which is 9*9*7 = 567. We optimize by first finding the end point
+  # for those 567 numbers and inserting them into our lookup.
+  count = 0
+  for x in xrange(2, 567+1):
+    m = x
     while True:
-      if x in low:
-        low.update(xs)
+      if m == 1:
+        low.add(x)
         break
-      elif x in high:
-        high.update(xs)
+      elif m == 89:
+        count += 1
+        high.add(x)
         break
-      x = mutate(x)
-      xs.append(x)
-  print len(high)
+      m = mutate(m)
+
+  for x in xrange(567+1, kMax):
+    m = mutate(x)
+    while True:
+      if m in low:
+        break
+      elif m in high:
+        count += 1
+        break
+      
+
+  print count
 
 if __name__=="__main__":
   main()
