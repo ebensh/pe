@@ -1,7 +1,16 @@
+#import cProfile
 import math
 
-def mutate(x):
+def mutate1(x):
   return sum([int(d) ** 2 for d in str(x)])
+
+def mutate2(x):
+  sum = 0
+  while x >= 10:
+    sum += (x % 10) ** 2
+    x = int(x / 10)
+  sum += x ** 2
+  return sum
 
 def main():
   kMax = 10000000
@@ -23,7 +32,7 @@ def main():
         count += 1
         high.add(x)
         break
-      m = mutate(m)
+      m = mutate2(m)
 
   # Does freezing the set make a performance difference?
   low = frozenset(low)
@@ -32,7 +41,7 @@ def main():
   for x in xrange(567+1, kMax):
     m = x
     while True:
-      m = mutate(m)
+      m = mutate2(m)
       if m in low:
         break
       elif m in high:
@@ -42,4 +51,5 @@ def main():
   print count
 
 if __name__=="__main__":
+  #cProfile.run('main()')
   main()
