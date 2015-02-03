@@ -1,22 +1,43 @@
-from primes import primeSieve
+import cPickle
+#import cProfile
+import igraph
 import itertools
+import math
 
-MAX_PRIME = 1000 #1000000
-primes = primeSieve(MAX_PRIME)
-greatest_prime = primes[-1]
-primes_to_check = filter(lambda p: p <= greatest_prime / 2, primes)
-prime_set = frozenset(primes)
+primes = set()
 
-def is_prime_pair(s_x, s_y):
-  return int(s_x + s_y) in prime_set and int(s_y + s_x) in prime_set
+def is_pair(x, y):
+  # I knew this was a way to do it, but credit where credit's due :)
+  # http://stackoverflow.com/questions/12838549/merge-two-integers-in-python
+  if int(math.pow(10,(int(math.log(y,10)) + 1)) * x + y) not in primes: return False
+  if int(math.pow(10,(int(math.log(x,10)) + 1)) * y + x) not in primes: return False
+  return True
 
-prime_pairs = [set()]*len(primes_to_check)
+def main(kMaxPrime):
+  global primes
 
-for i, p1 in enumerate(primes_to_check):
-  s1 = str(p1)
-  for p2 in primes_to_check[i+1:]:
-    print p1, p2
-    if is_prime_pair(s1, str(p2)):
-      prime_pairs[p1].add(p2)
+  sortedPrimes = []
+  with open('primes_to_100000000.p', 'r') as f:
+    sortedPrimes = cPickle.load(f)
+    primes = set(sortedPrimes)
 
-print prime_pairs[7]
+  g = igraph.Graph()
+
+  for ix, x in enumerate(sortedPrimes):
+    g.add_vertex()  # Vertex x has index ix
+    edges = []
+    for iy, y in enumerate(itertools.takewhile(lambda p: p < x, sortedPrimes)):
+      if is_pair(x, y):
+        edges.append((ix, iy))
+    g.add_edges(edges)
+    # Don't check g.omega() here because it's extremely expensive.
+    if x > kMaxPrime: break
+
+  print g.largest_cliques()
+  for clique in g.largest_cliques():
+    primes = map(lambda v: sortedPrimes[v], clique)
+    print primes, sum(primes)
+
+if __name__=="__main__":
+  main(10000)
+  #cProfile.run('main(10000)')
